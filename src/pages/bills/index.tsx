@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react'
 import { View, Text, ScrollView } from '@tarojs/components'
 import Taro from '@tarojs/taro'
-import { mockBills } from '@/data/mockBills'
+import { useBillingStore } from '@/store'
 import { Bill } from '@/types'
 import { formatTimestamp } from '@/utils/time'
 import BillCard from '@/components/BillCard'
@@ -12,16 +12,18 @@ import classnames from 'classnames'
 type FilterType = 'all' | 'pending' | 'paid' | 'completed'
 
 const BillsPage: React.FC = () => {
+  const { bills, getBillsByStatus, getTotalStats } = useBillingStore()
   const [filter, setFilter] = useState<FilterType>('all')
+  const stats = getTotalStats()
 
   const filteredBills = useMemo(() => {
-    if (filter === 'all') return mockBills
-    return mockBills.filter(b => b.status === filter)
-  }, [filter])
+    if (filter === 'all') return [...bills].sort((a, b) => b.startTime - a.startTime)
+    return getBillsByStatus(filter).sort((a, b) => b.startTime - a.startTime)
+  }, [bills, filter, getBillsByStatus])
 
-  const totalAmount = mockBills.reduce((acc, b) => acc + b.totalAmount, 0)
-  const totalKwh = mockBills.reduce((acc, b) => acc + b.totalEnergyKwh, 0)
-  const pendingCount = mockBills.filter(b => b.status === 'pending').length
+  const totalAmount = stats.totalAmount
+  const totalKwh = stats.totalEnergyKwh
+  const pendingCount = stats.pendingCount
 
   const groupedBills = useMemo(() => {
     const groups: Record<string, Bill[]> = {}
@@ -50,7 +52,7 @@ const BillsPage: React.FC = () => {
         <Text className={styles.summaryAmount}>¥{totalAmount.toFixed(2)}</Text>
         <View className={styles.summaryRow}>
           <View className={styles.summaryItem}>
-            <Text className={styles.summaryItemValue}>{mockBills.length}</Text>
+            <Text className={styles.summaryItemValue}>{bills.length}</Text>
             <Text className={styles.summaryItemLabel}>充电次数</Text>
           </View>
           <View className={styles.summaryItem}>

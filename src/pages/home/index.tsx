@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { View, Text, ScrollView } from '@tarojs/components'
 import Taro from '@tarojs/taro'
-import { mockChargingPiles, mockQueueUsers, mockCallRecords } from '@/data/mockQueue'
-import { sortQueueByPriority, calculateQueuePositions } from '@/utils/queue'
+import { useQueueStore } from '@/store'
 import { formatDuration, getRelativeTime } from '@/utils/time'
 import ChargingPileComponent from '@/components/ChargingPile'
 import PriorityBadge from '@/components/PriorityBadge'
@@ -11,33 +10,29 @@ import styles from './index.module.scss'
 import classnames from 'classnames'
 
 const HomePage: React.FC = () => {
-  const [sortedQueue, setSortedQueue] = useState(sortQueueByPriority(mockQueueUsers))
-  const [positionMap, setPositionMap] = useState<Map<string, number>>(new Map())
+  const { users, piles, callRecords, getSortedQueue, getPositionMap, addUserToQueue } = useQueueStore()
   const [refreshing, setRefreshing] = useState(false)
 
+  const sortedQueue = useMemo(() => getSortedQueue(), [users])
+  const positionMap = useMemo(() => getPositionMap(), [users])
+
   useEffect(() => {
-    const sorted = sortQueueByPriority(mockQueueUsers)
-    setSortedQueue(sorted)
-    setPositionMap(calculateQueuePositions(sorted))
-    console.log('[Home] 初始化队列数据，队列长度:', sorted.length)
-  }, [])
+    console.log('[Home] 队列已更新，长度:', sortedQueue.length)
+  }, [sortedQueue])
 
   const myUser = sortedQueue.find(u => u.isCurrentUser)
   const myPosition = myUser ? positionMap.get(myUser.id) : 0
 
-  const idleCount = mockChargingPiles.filter(p => p.status === 'idle').length
-  const chargingCount = mockChargingPiles.filter(p => p.status === 'charging').length
+  const idleCount = piles.filter(p => p.status === 'idle').length
+  const chargingCount = piles.filter(p => p.status === 'charging').length
   const waitingCount = sortedQueue.filter(u => u.status === 'waiting').length
 
-  const latestCall = mockCallRecords[0]
+  const latestCall = callRecords[0]
 
   const handlePullDownRefresh = () => {
     console.log('[Home] 下拉刷新')
     setRefreshing(true)
     setTimeout(() => {
-      const sorted = sortQueueByPriority(mockQueueUsers)
-      setSortedQueue(sorted)
-      setPositionMap(calculateQueuePositions(sorted))
       setRefreshing(false)
       Taro.stopPullDownRefresh()
       Taro.showToast({ title: '刷新成功', icon: 'success' })
@@ -64,14 +59,26 @@ const HomePage: React.FC = () => {
       confirmColor: '#00c853',
       success: (res) => {
         if (res.confirm) {
+          const nicknames = ['李先生', '王女士', '张先生', '陈女士', '刘先生', '赵女士', '孙先生', '周女士']
+          const plates = ['京A·12345', '京B·67890', '京C·11111', '京D·22222', '京E·33333']
+          const randomNickname = nicknames[Math.floor(Math.random() * nicknames.length)]
+          const randomPlate = plates[Math.floor(Math.random() * plates.length)]
+
+          const { ticketNumber, record } = addUserToQueue(priority, randomNickname, randomPlate)
+
+          let successMsg = `取号成功\n票号: ${ticketNumber}`
+          if (record && record.affectedUserIds.length > 0) {
+            successMsg += `\n插队影响 ${record.affectedUserIds.length} 人`
+          }
+
           Taro.showToast({
-            title: '取号成功',
+            title: successMsg,
             icon: 'success',
-            duration: 1500
+            duration: 2000
           })
           setTimeout(() => {
             Taro.switchTab({ url: '/pages/queue/index' })
-          }, 1500)
+          }, 2000)
         }
       }
     })
@@ -201,7 +208,7 @@ const HomePage: React.FC = () => {
           <Text className={styles.sectionTitle}>充电桩状态</Text>
         </View>
         <View className={styles.pilesGrid}>
-          {mockChargingPiles.map(pile => (
+          {piles.map(pile => (
             <ChargingPileComponent key={pile.id} pile={pile} />
           ))}
         </View>

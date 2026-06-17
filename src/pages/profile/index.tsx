@@ -1,29 +1,42 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { View, Text, ScrollView } from '@tarojs/components'
 import Taro from '@tarojs/taro'
-import { mockInsertionRecords, mockQueueUsers } from '@/data/mockQueue'
+import { useQueueStore, useBillingStore } from '@/store'
 import { formatTimestamp } from '@/utils/time'
 import PriorityBadge from '@/components/PriorityBadge'
 import { PriorityLevel } from '@/types'
 import styles from './index.module.scss'
 
 const ProfilePage: React.FC = () => {
-  const myAffectedRecords = mockInsertionRecords.filter(r =>
-    r.affectedUserIds.includes('me')
+  const { users, insertionRecords } = useQueueStore()
+  const { getTotalStats } = useBillingStore()
+  const stats = getTotalStats()
+
+  const currentUserId = useMemo(() => {
+    const me = users.find(u => u.isCurrentUser)
+    return me?.id || 'me'
+  }, [users])
+
+  const myAffectedRecords = useMemo(() =>
+    insertionRecords.filter(r => r.affectedUserIds.includes(currentUserId)),
+    [insertionRecords, currentUserId]
   )
 
-  const totalCharges = 56
-  const totalKwh = 2186.5
+  const myInsertions = useMemo(() =>
+    insertionRecords.filter(r =>
+      r.insertedUserId === currentUserId || r.affectedUserIds.includes(currentUserId)
+    ),
+    [insertionRecords, currentUserId]
+  )
+
+  const totalCharges = stats.totalCount
+  const totalKwh = stats.totalEnergyKwh
   const totalSaved = 682.3
 
   const handleMenuClick = (menu: string) => {
     console.log('[Profile] 点击菜单:', menu)
     Taro.showToast({ title: `${menu}功能开发中`, icon: 'none' })
   }
-
-  const myInsertions = mockInsertionRecords.filter(r =>
-    r.insertedUserId === 'me' || r.affectedUserIds.includes('me')
-  )
 
   return (
     <ScrollView scrollY className={styles.page}>

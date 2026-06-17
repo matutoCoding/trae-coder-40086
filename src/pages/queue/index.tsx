@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { View, Text, ScrollView } from '@tarojs/components'
 import Taro from '@tarojs/taro'
-import { mockQueueUsers, mockInsertionRecords, mockCallRecords } from '@/data/mockQueue'
-import { sortQueueByPriority, calculateQueuePositions } from '@/utils/queue'
+import { useQueueStore } from '@/store'
 import { formatTimestamp, getRelativeTime } from '@/utils/time'
 import QueueCard from '@/components/QueueCard'
 import PriorityBadge from '@/components/PriorityBadge'
@@ -14,17 +13,16 @@ import classnames from 'classnames'
 type TabType = 'queue' | 'records' | 'calls'
 
 const QueuePage: React.FC = () => {
+  const { users, insertionRecords, callRecords, getSortedQueue, getPositionMap } = useQueueStore()
   const [activeTab, setActiveTab] = useState<TabType>('queue')
-  const [sortedQueue, setSortedQueue] = useState(sortQueueByPriority(mockQueueUsers))
-  const [positionMap, setPositionMap] = useState<Map<string, number>>(new Map())
   const [refreshing, setRefreshing] = useState(false)
 
+  const sortedQueue = useMemo(() => getSortedQueue(), [users])
+  const positionMap = useMemo(() => getPositionMap(), [users])
+
   useEffect(() => {
-    const sorted = sortQueueByPriority(mockQueueUsers)
-    setSortedQueue(sorted)
-    setPositionMap(calculateQueuePositions(sorted))
-    console.log('[Queue] 初始化队列，长度:', sorted.length)
-  }, [])
+    console.log('[Queue] 队列已更新，长度:', sortedQueue.length, '插队记录:', insertionRecords.length)
+  }, [sortedQueue, insertionRecords])
 
   const waitingUsers = sortedQueue.filter(u => u.status === 'waiting')
   const vipCount = waitingUsers.filter(u => u.priority === PriorityLevel.VIP).length
@@ -34,9 +32,6 @@ const QueuePage: React.FC = () => {
     console.log('[Queue] 刷新队列')
     setRefreshing(true)
     setTimeout(() => {
-      const sorted = sortQueueByPriority(mockQueueUsers)
-      setSortedQueue(sorted)
-      setPositionMap(calculateQueuePositions(sorted))
       setRefreshing(false)
       Taro.showToast({ title: '刷新成功', icon: 'success' })
     }, 800)
@@ -127,11 +122,11 @@ const QueuePage: React.FC = () => {
           <View className={styles.sectionHeader}>
             <Text className={styles.sectionTitle}>
               📝 插队公平性记录
-              <Text className={styles.sectionCount}>{mockInsertionRecords.length}条</Text>
+              <Text className={styles.sectionCount}>{insertionRecords.length}条</Text>
             </Text>
           </View>
-          {mockInsertionRecords.length > 0 ? (
-            mockInsertionRecords.map(record => (
+          {insertionRecords.length > 0 ? (
+            insertionRecords.map(record => (
               <View key={record.id} className={styles.insertionRecord}>
                 <View className={styles.insertionHeader}>
                   <View className={styles.insertionWho}>
@@ -183,11 +178,11 @@ const QueuePage: React.FC = () => {
           <View className={styles.sectionHeader}>
             <Text className={styles.sectionTitle}>
               🔔 叫号历史
-              <Text className={styles.sectionCount}>{mockCallRecords.length}条</Text>
+              <Text className={styles.sectionCount}>{callRecords.length}条</Text>
             </Text>
           </View>
-          {mockCallRecords.length > 0 ? (
-            mockCallRecords.map(record => (
+          {callRecords.length > 0 ? (
+            callRecords.map(record => (
               <View key={record.id} className={styles.callRecordCard}>
                 <View className={styles.callPile}>
                   <Text className={styles.callPileText}>{record.pileName.replace('桩', '')}</Text>

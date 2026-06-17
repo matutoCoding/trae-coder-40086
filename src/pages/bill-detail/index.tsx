@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { View, Text, ScrollView } from '@tarojs/components'
 import Taro, { useRouter } from '@tarojs/taro'
-import { getBillById } from '@/data/mockBills'
+import { useBillingStore } from '@/store'
 import { Bill } from '@/types'
 import { formatTimestamp, formatDuration } from '@/utils/time'
 import { PricePeriodLabel } from '@/types'
@@ -12,16 +12,17 @@ import classnames from 'classnames'
 
 const BillDetailPage: React.FC = () => {
   const router = useRouter()
-  const [bill, setBill] = useState<Bill | null>(null)
+  const { bills, payBill, getBillById } = useBillingStore()
+  const billId = router.params.id
+
+  const bill = useMemo(() => {
+    if (!billId) return null
+    return getBillById(billId) || null
+  }, [billId, bills, getBillById])
 
   useEffect(() => {
-    const id = router.params.id
-    console.log('[BillDetail] 查询账单ID:', id)
-    if (id) {
-      const found = getBillById(id)
-      setBill(found || null)
-    }
-  }, [router.params.id])
+    console.log('[BillDetail] 账单状态已更新:', bill?.id, bill?.status)
+  }, [bill])
 
   const handlePay = () => {
     if (!bill) return
@@ -36,8 +37,13 @@ const BillDetailPage: React.FC = () => {
           Taro.showLoading({ title: '支付中...', mask: true })
           setTimeout(() => {
             Taro.hideLoading()
-            Taro.showToast({ title: '支付成功', icon: 'success' })
-            setTimeout(() => Taro.navigateBack(), 1500)
+            const success = payBill(bill.id)
+            if (success) {
+              Taro.showToast({ title: '支付成功', icon: 'success' })
+              setTimeout(() => Taro.navigateBack(), 1500)
+            } else {
+              Taro.showToast({ title: '支付失败，请重试', icon: 'error' })
+            }
           }, 1200)
         }
       }
