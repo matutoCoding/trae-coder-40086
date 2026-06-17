@@ -1,0 +1,98 @@
+@use '@/styles/variables.scss' as *;
+
+.card {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  box-shadow: $shadow-card;
+  transition: all $transition-base;
+  margin-bottom: $spacing-md;
+
+  &.isCurrent {
+    border: 2rpx solid $color-primary;
+    transform: scale(1.02);
+  }
+}
+
+.header {
+  padding: $spacing-md $spacing-lg;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.periodLabel {
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
+  color: $color-text-white;
+}
+
+.currentTag {
+  background: rgba(255, 255, 255, 0.25);
+  padding: 2rpx 14rpx;
+  border-radius: $radius-round;
+  backdrop-filter: blur(4rpx);
+}
+
+.currentText {
+  font-size: $font-size-xs;
+  color: $color-text-white;
+  font-weight: $font-weight-semibold;
+}
+
+.body {
+  padding: $spacing-lg;
+}
+
+.timeRow {
+  margin-bottom: $spacing-md;
+}
+
+.timeText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  font-weight: $font-weight-medium;
+}
+
+.priceRows {
+  display: flex;
+  gap: $spacing-lg;
+  padding-bottom: $spacing-md;
+  border-bottom: 1rpx dashed $color-border;
+  margin-bottom: $spacing-md;
+}
+
+.priceItem {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+}
+
+.priceLabel {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.priceValue {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.totalLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.totalValue {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+}

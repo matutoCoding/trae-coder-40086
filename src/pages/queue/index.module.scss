@@ -1,0 +1,290 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+  padding: 0 $page-padding;
+  padding-bottom: 40rpx;
+  background: $color-bg-page;
+}
+
+.headerCard {
+  margin-top: $spacing-xl;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  border-radius: $radius-xl;
+  padding: $spacing-xl;
+  color: $color-text-white;
+  box-shadow: 0 8rpx 32rpx rgba($color-primary, 0.2);
+}
+
+.headerTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  margin-bottom: $spacing-sm;
+}
+
+.headerStats {
+  display: flex;
+  justify-content: space-between;
+  margin-top: $spacing-md;
+}
+
+.headerStat {
+  text-align: center;
+  flex: 1;
+
+  &:not(:last-child) {
+    border-right: 1rpx solid rgba(255, 255, 255, 0.2);
+  }
+}
+
+.headerStatValue {
+  font-size: 40rpx;
+  font-weight: $font-weight-bold;
+  line-height: 1.2;
+}
+
+.headerStatLabel {
+  font-size: $font-size-xs;
+  opacity: 0.85;
+  margin-top: 4rpx;
+}
+
+.tabBar {
+  display: flex;
+  gap: $spacing-md;
+  margin: $spacing-xl 0 $spacing-md;
+}
+
+.tabItem {
+  flex: 1;
+  padding: $spacing-md $spacing-lg;
+  background: $color-bg-card;
+  border-radius: $radius-button;
+  text-align: center;
+  box-shadow: $shadow-card;
+  transition: all $transition-base;
+
+  &.active {
+    background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+    color: $color-text-white;
+  }
+}
+
+.tabText {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+
+  .active & {
+    color: $color-text-white;
+  }
+
+  &:not(.active &) {
+    color: $color-text-secondary;
+  }
+}
+
+.section {
+  margin-top: $spacing-lg;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-md;
+  padding: 0 $spacing-xs;
+}
+
+.sectionTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.sectionCount {
+  font-size: $font-size-xs;
+  background: rgba($color-primary, 0.1);
+  color: $color-primary;
+  padding: 4rpx 12rpx;
+  border-radius: $radius-round;
+  font-weight: $font-weight-medium;
+}
+
+.insertionRecord {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+  box-shadow: $shadow-card;
+  border-left: 6rpx solid $color-warning;
+}
+
+.insertionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: $spacing-md;
+}
+
+.insertionWho {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  flex-wrap: wrap;
+}
+
+.insertionName {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.insertionTime {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.insertionBody {
+  padding: $spacing-md;
+  background: $color-bg-hover;
+  border-radius: $radius-md;
+}
+
+.insertionTitle {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-bottom: $spacing-sm;
+}
+
+.insertionList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+}
+
+.insertionItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-xs 0;
+  border-bottom: 1rpx dashed $color-border;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.insertionItemName {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.positionChange {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+}
+
+.oldPos {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  text-decoration: line-through;
+}
+
+.arrowIcon {
+  font-size: $font-size-xs;
+  color: $color-warning;
+}
+
+.newPos {
+  font-size: $font-size-sm;
+  color: $color-warning;
+  font-weight: $font-weight-semibold;
+}
+
+.callRecordCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+  box-shadow: $shadow-card;
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+}
+
+.callPile {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: $radius-md;
+  background: linear-gradient(135deg, rgba($color-primary, 0.1) 0%, rgba($color-primary, 0.2) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.callPileText {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+}
+
+.callInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  min-width: 0;
+}
+
+.callRow1 {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.callUserName {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  @include text-ellipsis;
+  max-width: 200rpx;
+}
+
+.callTicket {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  font-family: monospace;
+}
+
+.callTimeText {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.emptyQueue {
+  padding: $spacing-xl * 2 $spacing-lg;
+  text-align: center;
+}
+
+.emptyIcon {
+  font-size: 80rpx;
+  margin-bottom: $spacing-md;
+}
+
+.emptyTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-secondary;
+  margin-bottom: $spacing-sm;
+}
+
+.emptyDesc {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  line-height: 1.6;
+}

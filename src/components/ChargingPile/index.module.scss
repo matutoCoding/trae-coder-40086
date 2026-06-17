@@ -1,0 +1,163 @@
+@use '@/styles/variables.scss' as *;
+
+.pileCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  border: 2rpx solid transparent;
+  transition: all $transition-base;
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &.charging {
+    border-color: rgba($color-primary, 0.3);
+    background: linear-gradient(180deg, #f0fdf4 0%, $color-bg-card 100%);
+  }
+
+  &.idle {
+    border-color: rgba($color-success, 0.2);
+  }
+
+  &.maintenance {
+    opacity: 0.7;
+    background: #fafafa;
+  }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-md;
+}
+
+.pileName {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.statusWrap {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+}
+
+.statusDot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: $radius-round;
+
+  &.dotIdle {
+    background: $color-success;
+    box-shadow: 0 0 8rpx rgba($color-success, 0.6);
+  }
+
+  &.dotCharging {
+    background: $color-primary;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  &.dotMaintenance {
+    background: $color-warning;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.statusText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.powerInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-sm 0;
+  border-bottom: 1rpx solid $color-divider;
+  margin-bottom: $spacing-md;
+}
+
+.powerLabel {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.powerValue {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-primary;
+}
+
+.chargingSection {
+  margin-top: $spacing-sm;
+}
+
+.progressWrap {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  margin-bottom: $spacing-sm;
+}
+
+.progressBar {
+  flex: 1;
+  height: 12rpx;
+  background: $color-divider;
+  border-radius: $radius-round;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, $color-primary 0%, $color-primary-light 100%);
+  border-radius: $radius-round;
+  transition: width $transition-slow;
+}
+
+.progressText {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-primary;
+  min-width: 80rpx;
+  text-align: right;
+}
+
+.userHint {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.idleSection {
+  margin-top: $spacing-sm;
+  padding: $spacing-sm $spacing-md;
+  background: rgba($color-success, 0.1);
+  border-radius: $radius-sm;
+  text-align: center;
+}
+
+.idleText {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-success;
+}
+
+.maintSection {
+  margin-top: $spacing-sm;
+  padding: $spacing-sm $spacing-md;
+  background: rgba($color-warning, 0.1);
+  border-radius: $radius-sm;
+  text-align: center;
+}
+
+.maintText {
+  font-size: $font-size-sm;
+  color: $color-warning;
+}

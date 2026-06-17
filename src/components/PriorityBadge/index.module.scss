@@ -1,0 +1,45 @@
+@use '@/styles/variables.scss' as *;
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: $radius-sm;
+  font-weight: $font-weight-semibold;
+  white-space: nowrap;
+
+  &.sizeSm {
+    padding: 2rpx 10rpx;
+    font-size: $font-size-xs;
+  }
+
+  &.sizeMd {
+    padding: 4rpx 14rpx;
+    font-size: $font-size-sm;
+  }
+
+  &.sizeLg {
+    padding: 6rpx 18rpx;
+    font-size: $font-size-md;
+    border-radius: $radius-md;
+  }
+}
+
+.emergency {
+  background: linear-gradient(135deg, $color-emergency 0%, #ff6e40 100%);
+  color: $color-text-white;
+}
+
+.vip {
+  background: linear-gradient(135deg, $color-vip 0%, #ffee58 100%);
+  color: #7c5e00;
+}
+
+.normal {
+  background: $color-bg-hover;
+  color: $color-text-secondary;
+}
+
+.text {
+  line-height: 1.4;
+}

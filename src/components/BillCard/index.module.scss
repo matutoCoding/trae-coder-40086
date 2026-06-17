@@ -1,0 +1,147 @@
+@use '@/styles/variables.scss' as *;
+
+.card {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+  transition: all $transition-base;
+
+  &:active {
+    transform: scale(0.99);
+  }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: $spacing-md;
+  border-bottom: 1rpx solid $color-divider;
+  margin-bottom: $spacing-md;
+}
+
+.orderInfo {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+}
+
+.pileName {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.orderNo {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  font-family: monospace;
+}
+
+.statusTag {
+  padding: 6rpx 16rpx;
+  border-radius: $radius-round;
+
+  &.statusPending {
+    background: rgba($color-warning, 0.1);
+  }
+
+  &.statusPaid {
+    background: rgba($color-primary, 0.1);
+  }
+
+  &.statusCompleted {
+    background: $color-bg-hover;
+  }
+}
+
+.statusText {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+
+  .statusPending & {
+    color: $color-warning;
+  }
+
+  .statusPaid & {
+    color: $color-primary;
+  }
+
+  .statusCompleted & {
+    color: $color-text-tertiary;
+  }
+}
+
+.body {
+  margin-bottom: $spacing-md;
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $spacing-md;
+}
+
+.infoItem {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+}
+
+.infoLabel {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.infoValue {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: $spacing-md;
+  border-top: 1rpx dashed $color-border;
+}
+
+.segPreview {
+  display: flex;
+  gap: 8rpx;
+}
+
+.segDot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: $radius-round;
+  background: linear-gradient(135deg, $color-valley, $color-primary);
+
+  &:nth-child(2) {
+    background: linear-gradient(135deg, $color-flat, $color-peak);
+  }
+
+  &:nth-child(3) {
+    background: linear-gradient(135deg, $color-peak, $color-peak-top);
+  }
+}
+
+.amountWrap {
+  display: flex;
+  align-items: baseline;
+  gap: $spacing-sm;
+}
+
+.amountLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.amountValue {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+}
