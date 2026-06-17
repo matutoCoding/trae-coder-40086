@@ -110,6 +110,7 @@ export interface Bill {
   totalAmount: number
   status: 'pending' | 'paid' | 'completed' | 'refunded'
   paidAt?: number
+  paymentMethod?: string
 }
 
 export interface UserInfo {

@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { QueueUser, PriorityLevel, InsertionRecord, CallRecord, ChargingPile } from '@/types'
 import { insertIntoQueue, generateTicketNumber, sortQueueByPriority, calculateQueuePositions, estimateWaitTime } from '@/utils/queue'
+import { saveToStorage, loadFromStorage } from '@/utils/persist'
 import { mockQueueUsers, mockInsertionRecords, mockCallRecords, mockChargingPiles } from '@/data/mockQueue'
 
 interface QueueState {
@@ -9,6 +10,9 @@ interface QueueState {
   callRecords: CallRecord[]
   piles: ChargingPile[]
   currentUserId: string
+  _hasHydrated: boolean
+  hydrate: () => void
+  persist: () => void
   addUserToQueue: (priority: PriorityLevel, nickname: string, plateNumber: string) => {
     newQueue: QueueUser[]
     record?: InsertionRecord
@@ -20,17 +24,53 @@ interface QueueState {
   getPosition: (userId: string) => number
   getSortedQueue: () => QueueUser[]
   getPositionMap: () => Map<string, number>
+  resetToMock: () => void
 }
 
-export const useQueueStore = create<QueueState>((set, get) => ({
+const STORAGE_KEY = 'queue_state'
+
+const getInitialState = () => ({
   users: [...mockQueueUsers],
   insertionRecords: [...mockInsertionRecords],
   callRecords: [...mockCallRecords],
   piles: [...mockChargingPiles],
   currentUserId: 'me',
+  _hasHydrated: false
+})
+
+export const useQueueStore = create<QueueState>((set, get) => ({
+  ...getInitialState(),
+
+  hydrate: () => {
+    const saved = loadFromStorage<Partial<QueueState> | null>(STORAGE_KEY, null)
+    if (saved && saved.users && saved.users.length > 0) {
+      set({
+        users: saved.users,
+        insertionRecords: saved.insertionRecords || [],
+        callRecords: saved.callRecords || [],
+        piles: saved.piles || [...mockChargingPiles],
+        _hasHydrated: true
+      })
+      console.log('[QueueStore] 从本地存储恢复数据成功，用户数:', saved.users.length)
+    } else {
+      set({ _hasHydrated: true })
+      console.log('[QueueStore] 无本地存储数据，使用Mock初始数据')
+    }
+  },
+
+  persist: () => {
+    const { users, insertionRecords, callRecords, piles } = get()
+    saveToStorage(STORAGE_KEY, {
+      users,
+      insertionRecords,
+      callRecords,
+      piles
+    })
+    console.log('[QueueStore] 数据已持久化到本地存储')
+  },
 
   addUserToQueue: (priority, nickname, plateNumber) => {
-    const { users, insertionRecords } = get()
+    const { users, insertionRecords, persist } = get()
     const now = Date.now()
 
     const newUser: QueueUser = {
@@ -71,8 +111,11 @@ export const useQueueStore = create<QueueState>((set, get) => ({
 
     set({
       users: finalQueue,
-      insertionRecords: newInsertionRecords
+      insertionRecords: newInsertionRecords,
+      currentUserId: newUser.id
     })
+
+    persist()
 
     console.log('[QueueStore] 新增用户:', newUser.nickname, '优先级:', priority, '位置:', myPosition)
     if (record) {
@@ -87,14 +130,16 @@ export const useQueueStore = create<QueueState>((set, get) => ({
   },
 
   removeUserFromQueue: (userId) => {
+    const { persist } = get()
     set(state => ({
       users: state.users.filter(u => u.id !== userId)
     }))
+    persist()
     console.log('[QueueStore] 移除用户:', userId)
   },
 
   callNextUser: (pileId) => {
-    const { users, piles, callRecords } = get()
+    const { users, piles, callRecords, persist } = get()
     const waitingUsers = users.filter(u => u.status === 'waiting')
     const sorted = sortQueueByPriority(waitingUsers)
 
@@ -131,16 +176,20 @@ export const useQueueStore = create<QueueState>((set, get) => ({
       callRecords: [callRecord, ...state.callRecords]
     }))
 
+    persist()
+
     console.log('[QueueStore] 叫号:', nextUser.nickname, '到', pile.name)
     return callRecord
   },
 
   updatePileProgress: (pileId, progress) => {
+    const { persist } = get()
     set(state => ({
       piles: state.piles.map(p =>
         p.id === pileId ? { ...p, progress } : p
       )
     }))
+    persist()
   },
 
   getPosition: (userId) => {
@@ -157,5 +206,11 @@ export const useQueueStore = create<QueueState>((set, get) => ({
   getPositionMap: () => {
     const { users } = get()
     return calculateQueuePositions(users)
+  },
+
+  resetToMock: () => {
+    set(getInitialState())
+    get().persist()
+    console.log('[QueueStore] 已重置为Mock数据')
   }
 }))

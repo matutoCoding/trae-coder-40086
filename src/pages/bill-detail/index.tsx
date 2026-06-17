@@ -125,9 +125,15 @@ const BillDetailPage: React.FC = () => {
               <Text className={styles.infoValue}>{formatTimestamp(bill.endTime)}</Text>
             </View>
             {bill.paidAt && (
-              <View className={styles.infoItem} style={{ gridColumn: 'span 2' }}>
+              <View className={styles.infoItem}>
                 <Text className={styles.infoLabel}>支付时间</Text>
                 <Text className={styles.infoValue}>{formatTimestamp(bill.paidAt)}</Text>
+              </View>
+            )}
+            {bill.paymentMethod && (
+              <View className={styles.infoItem}>
+                <Text className={styles.infoLabel}>支付方式</Text>
+                <Text className={styles.infoValue}>{bill.paymentMethod}</Text>
               </View>
             )}
           </View>

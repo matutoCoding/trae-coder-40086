@@ -3,13 +3,14 @@ import { View, Text, ScrollView } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import { useQueueStore, useBillingStore } from '@/store'
 import { formatTimestamp } from '@/utils/time'
+import { clearAllStorage } from '@/utils/persist'
 import PriorityBadge from '@/components/PriorityBadge'
 import { PriorityLevel } from '@/types'
 import styles from './index.module.scss'
 
 const ProfilePage: React.FC = () => {
-  const { users, insertionRecords } = useQueueStore()
-  const { getTotalStats } = useBillingStore()
+  const { users, insertionRecords, resetToMock: resetQueue } = useQueueStore()
+  const { getTotalStats, resetToMock: resetBilling } = useBillingStore()
   const stats = getTotalStats()
 
   const currentUserId = useMemo(() => {
@@ -36,6 +37,24 @@ const ProfilePage: React.FC = () => {
   const handleMenuClick = (menu: string) => {
     console.log('[Profile] 点击菜单:', menu)
     Taro.showToast({ title: `${menu}功能开发中`, icon: 'none' })
+  }
+
+  const handleResetData = () => {
+    Taro.showModal({
+      title: '确认重置',
+      content: '确定要重置所有数据吗？\n队列、插队记录、账单支付状态都将恢复为演示数据。',
+      confirmText: '确认重置',
+      confirmColor: '#ff3d00',
+      success: (res) => {
+        if (res.confirm) {
+          clearAllStorage()
+          resetQueue()
+          resetBilling()
+          Taro.showToast({ title: '数据已重置', icon: 'success' })
+          console.log('[Profile] 用户手动重置所有数据')
+        }
+      }
+    })
   }
 
   return (
@@ -187,6 +206,22 @@ const ProfilePage: React.FC = () => {
           <View className={styles.menuIcon}>🎧</View>
           <View className={styles.menuContent}>
             <Text className={styles.menuTitle}>联系客服</Text>
+            <Text className={styles.menuArrow}>›</Text>
+          </View>
+        </View>
+      </View>
+
+      <View className={styles.menuSection}>
+        <View className={styles.menuHeader}>数据管理</View>
+        <View className={styles.menuItem} onClick={handleResetData}>
+          <View className={styles.menuIcon}>🔄</View>
+          <View className={styles.menuContent}>
+            <View>
+              <Text className={styles.menuTitle}>重置演示数据</Text>
+              <Text style={{ marginTop: '8rpx' }} className={styles.menuHint}>
+                清除本地存储，恢复为初始演示数据
+              </Text>
+            </View>
             <Text className={styles.menuArrow}>›</Text>
           </View>
         </View>
